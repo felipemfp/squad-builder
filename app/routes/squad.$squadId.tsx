@@ -9,7 +9,7 @@ export default function SquadBuilder() {
   const { squadId } = useParams();
   invariant(squadId, "Missing squadId param");
 
-  const { players, addPlayer, getInitialSquads, getNextSquad } =
+  const { players, addPlayer, getInitialSquads, getNextSquad, removePlayer } =
     useSquadBuilder(squadId);
 
   const [squadA, setSquadA] = useState<Player[]>([]);
@@ -22,7 +22,7 @@ export default function SquadBuilder() {
         <Button
           type="button"
           onClick={() => {
-            const name = nameList[Math.floor(Math.random() * nameList.length)];
+            const name = prompt('Enter player name:');
             if (name) {
               addPlayer(name);
             }
@@ -33,7 +33,7 @@ export default function SquadBuilder() {
         <Button
           type="button"
           onClick={() => {
-            const name = nameList[Math.floor(Math.random() * nameList.length)];
+            const name = prompt('Enter visitor name:');
             if (name) {
               addPlayer(name, true);
             }
@@ -43,26 +43,41 @@ export default function SquadBuilder() {
         </Button>
       </h2>
 
-      <table className="border-collapse table-auto w-full text-sm">
+      <table className="border-collapse table-auto text-sm">
         <thead>
           <tr>
             <th>#</th>
             <th>Name</th>
-            <th>Arrived At</th>
-            <th>Last Played At</th>
             <th>Visitor</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          {Object.values(players).map((player, index) => (
-            <tr key={player.id}>
-              <td>{index + 1}</td>
-              <td>{player.name}</td>
-              <td>{player.arrivedAt.toISOString()}</td>
-              <td>{player.lastPlayedAt.toISOString() || "Never"}</td>
-              <td>{player.isVisitor ? "Yes" : "No"}</td>
-            </tr>
-          ))}
+          {Object.values(players).map((player, index) => {
+
+            const isPlaying = squadA.some(x => x.id === player.id) || squadB.some(x => x.id === player.id);
+
+              return (
+                  <tr key={player.id}>
+                      <td>{index + 1}</td>
+                      <td>
+                          {player.name}
+                        {isPlaying && " (Playing)"}
+                      </td>
+                      <td>{player.isVisitor ? "Yes" : "No"}</td>
+                      <td>
+                          <Button
+                              type="button"
+                              onClick={() => {
+                                  removePlayer(player.id);
+                              } }
+                          >
+                              Remove
+                          </Button>
+                      </td>
+                  </tr>
+              );
+          })}
         </tbody>
       </table>
 
@@ -82,7 +97,10 @@ export default function SquadBuilder() {
           </h2>
           <ol>
             {squadA.map((player) => (
-              <li key={player.id}>{player.name}{player.isVisitor ? ' (Visitor)' : ''}</li>
+              <li key={player.id}>
+                {player.name}
+                {player.isVisitor ? " (Visitor)" : ""}
+              </li>
             ))}
           </ol>
         </div>
@@ -101,7 +119,10 @@ export default function SquadBuilder() {
           </h2>
           <ol>
             {squadB.map((player) => (
-              <li key={player.id}>{player.name}{player.isVisitor ? ' (Visitor)' : ''}</li>
+              <li key={player.id}>
+                {player.name}
+                {player.isVisitor ? " (Visitor)" : ""}
+              </li>
             ))}
           </ol>
         </div>

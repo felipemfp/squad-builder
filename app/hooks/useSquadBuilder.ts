@@ -73,7 +73,7 @@ export function useSquadBuilder(key: string) {
         ["lastPlayedAt", "isVisitor", "arrivedAt"],
         ["asc", "asc", "asc"]
       ).slice(0, squadSize);
-      setLastPlayedAt(pickedPlayers);
+      setLastPlayedAt(playingPlayers.concat(pickedPlayers));
       return pickedPlayers;
     },
     [players, setLastPlayedAt]
